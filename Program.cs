@@ -42,28 +42,58 @@ namespace LINQ
 
             //CLASULA WHERE COM SELECT SQL
             var r1 = products.Where(p => p.Category.Tier == 1 && p.Price < 900);
+            //sintaxe alternativa SQL
+            r1 = from p in products
+                 where p.Category.Tier == 1 && p.Price < 900.0
+                 select p; ;
             Print("TIER 1 AND PRICE < 900: ", r1);
+
 
             var r2 = products.Where(p => p.Category.Name == "Tools")
                 .Select(n => n.Name);
+            //sintaxe alternativa SQL
+            r2 = from p in products
+                 where p.Category.Name == "Tools"
+                 select p.Name;
             Print("NAMES OF PRODUCTS FROM TOOLS", r2);
 
             var r3 = products.Where(p => p.Name[0] == 'C')
                 .Select(p => new { p.Name, p.Price, CategoryName = p.Category.Name });
+            //sintaxe alternativa SQL
+            r3 = from p in products
+                 where p.Name[0] == 'C'
+                 select new {
+                     p.Name,
+                     p.Price,
+                     CategoryName = p.Category.Name
+            };
             Print("NAMES STARTED WITH 'C' AND ANYNOMOUS: ", r3);
 
             //CLAUSULA WHERE COM ORDER SQL
             var r4 = products.Where(p => p.Category.Tier == 1)
                 .OrderBy(p => p.Category).ThenBy(p => p.Name);
+            //sintaxe alternativa SQL
+            r4 = from p in products
+                 where p.Category.Tier == 1
+                 orderby p.Name
+                 orderby p.Price
+                 select p;
             Print("TIER 1, ORDER PRICE AND NAME : ", r4);
 
             // CLAUSULA WHERE COM PULA UM E ADICIONA O SEGUINTE
             var r5 = r4.Skip(2).Take(4);
+            //sintaxe alternativa SQL
+            r5 = (from p in r4
+                  select p).Skip(2).Take(4);
             Print("TIER 1 ORDER BY PRICE THEN BY NAME SKUPE 2 TAKE 4: ", r5);
 
 
             //CLAUSULA WHERE COM PEGUE O PRIMEIRO
             var r6 = products.First();
+            //sintaxe alternativa SQL
+            r6 = (from p in products
+                  where p.Price > 3000.0
+                  select p).FirstOrDefault();
             Console.WriteLine("FIRTS TEST 1: ", r6);
 
             //CLAUSULA WHERE COM PEGUE O PRIMEIRO OU NENHUM
@@ -111,7 +141,10 @@ namespace LINQ
 
             //AGRUPAMENTO DE SELEÇÃO
             var r16 = products.GroupBy(p => p.Category);
-            foreach(IGrouping<Category, product> group in r16)
+            //sintaxe alternativa SQL
+            r16 = from p in products
+                  group p by p.Category;
+            foreach (IGrouping<Category, product> group in r16)
             {
                 Console.WriteLine("CATEGORY " + group.Key.Name + ":");
                 foreach(product p in group)
